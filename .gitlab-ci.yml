@@ -1,0 +1,78 @@
+﻿stages:
+  - build
+  - deploy
+
+before_script:
+  - $OutputEncoding = [System.Text.Encoding]::UTF8
+  - "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8"
+  - "[Console]::InputEncoding = [System.Text.Encoding]::UTF8"
+  - Set-Location "C:\gitlab-runner\builds\d-GaPcbZs\0\2026seiii-029-Aigent\citywalk-evaluation"
+
+# 
+#  评估系统后端（SpringBoot / Maven）
+# 
+build-backend:
+  stage: build
+  tags:
+    - shell
+  only:
+    - master
+    - merge_requests
+  script:
+    - cd backend
+    - mvn clean package -DskipTests -s maven-settings.xml
+  artifacts:
+    paths:
+      - backend/target/*.jar
+    expire_in: 1 hour
+
+# 
+#  评估系统前端（Vue3）
+# 
+build-frontend:
+  stage: build
+  tags:
+    - shell
+  only:
+    - master
+    - merge_requests
+  script:
+    - cd frontend
+    - npm config set registry https://registry.npmmirror.com
+    - npm install
+    - npx vue-tsc --noEmit
+    - npx vite build
+  cache:
+    key: eval-frontend-node
+    paths:
+      - frontend/node_modules/
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 hour
+
+# 
+#  部署（仅 master 分支触发）
+# 
+deploy:
+  stage: deploy
+  tags:
+    - shell
+  only:
+    - master
+  needs:
+    - build-backend
+    - build-frontend
+  variables:
+    SSH_KEY: "C:/gitlab-runner/.ssh/id_rsa"
+    DEPLOY_HOST: "root@106.14.66.114"
+  script:
+    - ssh -i "C:/gitlab-runner/.ssh/id_rsa" -o StrictHostKeyChecking=no root@106.14.66.114 "mkdir -p /var/www/evaluation /opt/evaluation"
+    - scp -i "C:/gitlab-runner/.ssh/id_rsa" -o StrictHostKeyChecking=no -r frontend/dist/* root@106.14.66.114:/var/www/evaluation/
+    - scp -i "C:/gitlab-runner/.ssh/id_rsa" -o StrictHostKeyChecking=no backend/target/*.jar root@106.14.66.114:/opt/evaluation/app.jar
+    - ssh -i "C:/gitlab-runner/.ssh/id_rsa" -o StrictHostKeyChecking=no root@106.14.66.114 "pkill -f 'app.jar' || true && nohup java -jar /opt/evaluation/app.jar > /opt/evaluation/app.log 2>&1 &"
+    - Write-Host "评估系统部署完成"
+  environment:
+    name: production
+    url: http://106.14.66.114/evaluation/
+  when: on_success
