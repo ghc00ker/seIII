@@ -6,7 +6,7 @@ before_script:
   - $OutputEncoding = [System.Text.Encoding]::UTF8
   - "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8"
   - "[Console]::InputEncoding = [System.Text.Encoding]::UTF8"
-  - Set-Location "C:\gitlab-runner\builds\d-GaPcbZs\0\2026seiii-029-Aigent\citywalk-evaluation"
+  - Set-Location "C:\gitlab-runner\builds\d-GaPcbZs\0\2026seiii-029-Aigent\citywalk-pulse-evaluation"
 
 build-backend:
   stage: build
