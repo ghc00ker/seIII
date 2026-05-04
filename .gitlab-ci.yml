@@ -1,4 +1,4 @@
-﻿stages:
+stages:
   - build
   - deploy
 
@@ -8,9 +8,6 @@ before_script:
   - "[Console]::InputEncoding = [System.Text.Encoding]::UTF8"
   - Set-Location "C:\gitlab-runner\builds\d-GaPcbZs\0\2026seiii-029-Aigent\citywalk-evaluation"
 
-# 
-#  评估系统后端（SpringBoot / Maven）
-# 
 build-backend:
   stage: build
   tags:
@@ -26,9 +23,6 @@ build-backend:
       - backend/target/*.jar
     expire_in: 1 hour
 
-# 
-#  评估系统前端（Vue3）
-# 
 build-frontend:
   stage: build
   tags:
@@ -51,9 +45,6 @@ build-frontend:
       - frontend/dist/
     expire_in: 1 hour
 
-# 
-#  部署（仅 master 分支触发）
-# 
 deploy:
   stage: deploy
   tags:
@@ -63,9 +54,6 @@ deploy:
   needs:
     - build-backend
     - build-frontend
-  variables:
-    SSH_KEY: "C:/gitlab-runner/.ssh/id_rsa"
-    DEPLOY_HOST: "root@106.14.66.114"
   script:
     - ssh -i "C:/gitlab-runner/.ssh/id_rsa" -o StrictHostKeyChecking=no root@106.14.66.114 "mkdir -p /var/www/evaluation /opt/evaluation"
     - scp -i "C:/gitlab-runner/.ssh/id_rsa" -o StrictHostKeyChecking=no -r frontend/dist/* root@106.14.66.114:/var/www/evaluation/
@@ -74,5 +62,5 @@ deploy:
     - Write-Host "评估系统部署完成"
   environment:
     name: production
-    url: http://106.14.66.114/evaluation/
+    url: http://106.14.66.114/eval/
   when: on_success
