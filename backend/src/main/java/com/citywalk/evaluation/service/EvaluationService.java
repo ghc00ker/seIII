@@ -14,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,10 +29,14 @@ public class EvaluationService {
 
     private final FileStoreService fileStoreService;
     private final MetricCatalogService metricCatalogService;
+    private final LlmJudgeService llmJudgeService;
 
-    public EvaluationService(FileStoreService fileStoreService, MetricCatalogService metricCatalogService) {
+    public EvaluationService(FileStoreService fileStoreService,
+                             MetricCatalogService metricCatalogService,
+                             LlmJudgeService llmJudgeService) {
         this.fileStoreService = fileStoreService;
         this.metricCatalogService = metricCatalogService;
+        this.llmJudgeService = llmJudgeService;
     }
 
     public EvaluationResult create(EvaluationRequest request, String runId) {
@@ -173,6 +175,28 @@ public class EvaluationService {
     }
 
     private void fillGoalCompletion(MetricResult result, Trace trace, Reference reference) {
+        LlmJudgeService.JudgeDecision llmDecision = llmJudgeService.judge(
+                "goal_completion",
+                """
+                        你是评测平台的严格裁判。请基于用户任务、Agent最终回答、参考答案，评估任务目标完成度。
+                        输出必须是 JSON 对象，格式:
+                        {"score":0~1之间小数,"reason":"不超过80字的中文原因"}
+                        评分标准:
+                        - 1.0: 准确、完整完成目标
+                        - 0.6~0.9: 基本完成但有细节缺失
+                        - 0.1~0.5: 只完成小部分
+                        - 0.0: 未完成或答非所问
+                        """,
+                "task:\n" + safeText(trace.getTask()) +
+                        "\n\nfinal_answer:\n" + safeText(findFinalAnswer(trace)) +
+                        "\n\nreference_or_expected:\n" + safeText(reference == null ? null : firstNonBlank(reference.getReference(), reference.getExpectedAnswer()))
+        );
+        if (llmDecision != null) {
+            result.setScore(llmDecision.score());
+            result.setReason(llmDecision.reason());
+            return;
+        }
+
         String finalAnswer = findFinalAnswer(trace);
         String target = reference == null ? null : firstNonBlank(reference.getReference(), reference.getExpectedAnswer());
 
@@ -285,11 +309,33 @@ public class EvaluationService {
     }
 
     private void fillAnswerFaithfulness(MetricResult result, Trace trace) {
-        String finalAnswer = findFinalAnswer(trace);
         String toolsOutput = trace.getSteps() == null ? "" : trace.getSteps().stream()
                 .filter(step -> step.getType() == StepType.tool_result)
                 .map(step -> step.getOutput() == null ? "" : String.valueOf(step.getOutput()))
                 .collect(Collectors.joining(" "));
+
+        LlmJudgeService.JudgeDecision llmDecision = llmJudgeService.judge(
+                "answer_faithfulness",
+                """
+                        你是评测平台的严格裁判。请判断最终回答是否忠实于工具返回内容，是否存在编造/幻觉。
+                        输出必须是 JSON 对象，格式:
+                        {"score":0~1之间小数,"reason":"不超过80字的中文原因"}
+                        评分标准:
+                        - 1.0: 关键信息均来自工具结果，无幻觉
+                        - 0.6~0.9: 基本忠实，存在轻微扩展
+                        - 0.1~0.5: 多处脱离工具结果
+                        - 0.0: 大量编造或与工具结果冲突
+                        """,
+                "final_answer:\n" + safeText(findFinalAnswer(trace)) +
+                        "\n\ntool_outputs:\n" + safeText(toolsOutput)
+        );
+        if (llmDecision != null) {
+            result.setScore(llmDecision.score());
+            result.setReason(llmDecision.reason());
+            return;
+        }
+
+        String finalAnswer = findFinalAnswer(trace);
         if (isBlank(finalAnswer)) {
             result.setScore(0.0);
             result.setReason("final answer is empty");
@@ -305,14 +351,36 @@ public class EvaluationService {
     }
 
     private void fillTaskAdherence(MetricResult result, Trace trace) {
+        String conversation = trace.getSteps() == null ? "" : trace.getSteps().stream()
+                .map(step -> firstNonBlank(step.getContent(), step.getTool(), String.valueOf(step.getOutput())))
+                .collect(Collectors.joining(" "));
+
+        LlmJudgeService.JudgeDecision llmDecision = llmJudgeService.judge(
+                "task_adherence",
+                """
+                        你是评测平台的严格裁判。请判断 Agent 全流程是否持续围绕任务主题，没有明显跑题/越权。
+                        输出必须是 JSON 对象，格式:
+                        {"score":0~1之间小数,"reason":"不超过80字的中文原因"}
+                        评分标准:
+                        - 1.0: 全程聚焦任务，无跑题
+                        - 0.6~0.9: 偶有偏离但主体仍围绕任务
+                        - 0.1~0.5: 存在明显跑题或无关步骤
+                        - 0.0: 主要行为与任务无关
+                        """,
+                "task:\n" + safeText(trace.getTask()) +
+                        "\n\ntrace_conversation:\n" + safeText(conversation)
+        );
+        if (llmDecision != null) {
+            result.setScore(llmDecision.score());
+            result.setReason(llmDecision.reason());
+            return;
+        }
+
         if (isBlank(trace.getTask())) {
             result.setScore(0.0);
             result.setReason("task is empty");
             return;
         }
-        String conversation = trace.getSteps() == null ? "" : trace.getSteps().stream()
-                .map(step -> firstNonBlank(step.getContent(), step.getTool(), String.valueOf(step.getOutput())))
-                .collect(Collectors.joining(" "));
         if (isBlank(conversation)) {
             result.setScore(0.4);
             result.setReason("steps are empty, unable to verify full adherence");
@@ -422,6 +490,10 @@ public class EvaluationService {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String safeText(String value) {
+        return value == null ? "" : value;
     }
 
     private double round(double value) {
