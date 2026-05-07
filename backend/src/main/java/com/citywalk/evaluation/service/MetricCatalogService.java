@@ -54,8 +54,8 @@ public class MetricCatalogService {
     public String ragasMetricName(String metricName) {
         return metrics.stream()
                 .filter(item -> item.getName().equals(metricName))
-                .map(MetricDescriptor::getRagasMetric)
                 .findFirst()
+                .map(MetricDescriptor::getRagasMetric)
                 .orElse(null);
     }
 

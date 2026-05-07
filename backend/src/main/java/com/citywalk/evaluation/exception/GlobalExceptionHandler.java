@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleOther(Exception ex) {
+        ex.printStackTrace();
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("error", "internal server error");
         body.put("code", "INTERNAL_ERROR");

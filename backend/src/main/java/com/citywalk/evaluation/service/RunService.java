@@ -14,8 +14,11 @@ import com.citywalk.evaluation.model.TestCaseItem;
 import com.citywalk.evaluation.model.Trace;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -148,12 +151,19 @@ public class RunService {
     }
 
     private Trace requestTrace(String endpoint, String task) {
-        Map<String, String> body = Map.of("task", task);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(Map.of("task", task));
+        } catch (Exception ex) {
+            return null;
+        }
         try {
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     endpoint,
                     HttpMethod.POST,
-                    new org.springframework.http.HttpEntity<>(body),
+                    new HttpEntity<>(jsonBody, headers),
                     new ParameterizedTypeReference<>() {
                     }
             );
