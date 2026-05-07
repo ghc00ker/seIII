@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:file:.env/deepseek.properties
   mvc:
     cors:
       allowed-origins: "*"
@@ -11,3 +13,9 @@ spring:
 app:
   storage:
     root: data
+  llm-judge:
+    enabled: true
+    provider: deepseek
+    base-url: https://api.deepseek.com
+    model: deepseek-chat
+    api-key: ${DEEPSEEK_API_KEY:}
