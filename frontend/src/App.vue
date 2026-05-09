@@ -113,7 +113,7 @@ function activeStep() {
 
 /* ── Sidebar ── */
 .sidebar {
-  width: 220px;
+  width: 250px;
   position: fixed; top: 0; left: 0;
   height: 100vh;
   background: #0f172a;
@@ -148,14 +148,14 @@ function activeStep() {
 .nav-grp { padding: 10px 10px 6px; }
 .nav-item {
   display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px; border-radius: 8px;
+  padding: 9px 12px; border-radius: 8px;
   cursor: pointer; color: #64748b;
-  font-size: 13px; transition: all .15s; user-select: none; position: relative;
+  font-size: 14px; transition: all .15s; user-select: none; position: relative;
 }
 .nav-item:hover { background: rgba(255,255,255,0.06); color: #cbd5e1; }
 .nav-item.active { background: rgba(99,102,241,.15); color: #818cf8; }
 .nav-item.active .el-icon { color: #818cf8; }
-.nav-item.sub { padding: 7px 8px 7px 10px; font-size: 12.5px; margin-left: 2px; }
+.nav-item.sub { padding: 8px 10px 8px 12px; font-size: 13px; margin-left: 2px; }
 .nav-pill {
   margin-left: auto; font-size: 10px; font-weight: 600;
   background: rgba(99,102,241,.2); color: #818cf8;
@@ -163,13 +163,13 @@ function activeStep() {
 }
 
 .s-divider {
-  padding: 14px 16px 8px;
-  color: #1e293b; font-size: 10px; font-weight: 700;
+  padding: 14px 18px 8px;
+  color: #1e293b; font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.2px;
 }
 
 /* Workflow steps */
-.wf-step { padding: 2px 10px; }
+.wf-step { padding: 2px 12px; }
 .wf-hd   { display: flex; align-items: center; gap: 8px; padding: 5px 4px; }
 .wf-dot  {
   width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
@@ -194,15 +194,15 @@ function activeStep() {
 .wf-wire  { width: 1.5px; height: 10px; background: #1e293b; margin-left: 21px; }
 
 .s-footer {
-  margin-top: auto; padding: 14px 16px;
+  margin-top: auto; padding: 14px 18px;
   border-top: 1px solid rgba(255,255,255,0.04);
   display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: #1e293b; flex-shrink: 0;
+  font-size: 12px; color: #334155; flex-shrink: 0;
 }
 
 /* Main */
 .main-wrap {
-  margin-left: 220px; flex: 1;
+  margin-left: 250px; flex: 1;
   padding: 28px 32px;
   min-height: 100vh;
   background: #f2f3f5;

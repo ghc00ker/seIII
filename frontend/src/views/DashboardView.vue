@@ -62,12 +62,12 @@ onMounted(async () => {
           <h1 class="hero-title">Agent Eval</h1>
           <p class="hero-desc">端到端测评你的 AI Agent，覆盖任务合规、目标达成、工具调用与响应质量</p>
           <div class="hero-actions">
-            <el-button type="primary" class="hero-btn-primary" @click="router.push('/runs/new')">
+            <button class="hero-btn hero-btn-solid" @click="router.push('/runs/new')">
               <el-icon style="margin-right:6px"><VideoPlay /></el-icon> 发起新 Run
-            </el-button>
-            <el-button class="hero-btn-ghost" @click="router.push('/datasets/new')">
+            </button>
+            <button class="hero-btn hero-btn-outline" @click="router.push('/datasets/new')">
               <el-icon style="margin-right:6px"><Upload /></el-icon> 上传数据集
-            </el-button>
+            </button>
           </div>
         </div>
         <div class="hero-visual">
@@ -158,7 +158,7 @@ onMounted(async () => {
           <template #header>
             <div class="card-hd">
               <span class="card-hd-title">最近评估</span>
-              <el-button link type="primary" size="small" @click="router.push('/evaluations')">查看全部 →</el-button>
+              <span class="card-link" @click="router.push('/evaluations')">查看全部 →</span>
             </div>
           </template>
           <el-table :data="recentEvals" size="small" style="--el-table-header-bg-color:#f8fafc">
@@ -177,7 +177,7 @@ onMounted(async () => {
             </el-table-column>
             <el-table-column width="58" fixed="right">
               <template #default="{ row }">
-                <el-button link type="primary" size="small" @click="router.push(`/evaluations/${row.id}`)">详情</el-button>
+                <span class="card-link" @click="router.push(`/evaluations/${row.id}`)">详情</span>
               </template>
             </el-table-column>
           </el-table>
@@ -193,7 +193,7 @@ onMounted(async () => {
           <template #header>
             <div class="card-hd">
               <span class="card-hd-title">最近 Run</span>
-              <el-button link type="primary" size="small" @click="router.push('/runs')">查看全部 →</el-button>
+              <span class="card-link" @click="router.push('/runs')">查看全部 →</span>
             </div>
           </template>
           <div
@@ -254,26 +254,23 @@ onMounted(async () => {
   max-width: 460px; line-height: 1.6;
 }
 .hero-actions { display: flex; gap: 10px; }
-.hero-btn-primary {
-  background: rgba(255,255,255,0.15) !important;
-  border-color: rgba(255,255,255,0.3) !important;
-  color: #fff !important;
+.hero-btn {
+  display: inline-flex; align-items: center;
+  padding: 9px 18px; border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid rgba(255,255,255,0.35);
+  transition: all .15s; outline: none; font-family: inherit;
+  color: #fff;
+}
+.hero-btn-solid {
+  background: rgba(255,255,255,0.18);
   backdrop-filter: blur(4px);
-  font-weight: 600 !important;
 }
-.hero-btn-primary:hover {
-  background: rgba(255,255,255,0.25) !important;
+.hero-btn-solid:hover { background: rgba(255,255,255,0.28); }
+.hero-btn-outline {
+  background: transparent;
 }
-.hero-btn-ghost {
-  background: transparent !important;
-  border-color: rgba(255,255,255,0.3) !important;
-  color: rgba(255,255,255,0.85) !important;
-  font-weight: 600 !important;
-}
-.hero-btn-ghost:hover {
-  background: rgba(255,255,255,0.1) !important;
-  color: #fff !important;
-}
+.hero-btn-outline:hover { background: rgba(255,255,255,0.1); }
 /* Hero decorative rings */
 .hero-visual {
   flex-shrink: 0;
@@ -347,4 +344,11 @@ onMounted(async () => {
   text-align: center; padding: 32px;
   color: #94a3b8; font-size: 13px;
 }
+
+/* ── Card header link ── */
+.card-link {
+  font-size: 12px; color: #6366f1; font-weight: 500;
+  cursor: pointer; transition: color .15s;
+}
+.card-link:hover { color: #4f46e5; }
 </style>

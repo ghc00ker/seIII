@@ -13,7 +13,6 @@ const loading  = ref(false)
 
 const form = ref({
   agent_endpoint: '',
-  agent_version: '',
   dataset_id: '',
   selectedMetrics: [] as string[],
 })
@@ -35,7 +34,6 @@ async function submit() {
   try {
     const res = await createRun({
       agent_endpoint: form.value.agent_endpoint,
-      agent_version: form.value.agent_version || undefined,
       dataset_id: form.value.dataset_id,
       metrics: form.value.selectedMetrics.length ? form.value.selectedMetrics : undefined,
       metric_config,
@@ -75,12 +73,9 @@ onMounted(async () => {
       <el-col :span="14">
         <el-card shadow="never">
           <template #header><span class="card-title">基本信息</span></template>
-          <el-form :model="form" label-width="110px" size="default" label-position="right">
+          <el-form :model="form" label-position="top" size="default">
             <el-form-item label="Agent Endpoint" required>
               <el-input v-model="form.agent_endpoint" placeholder="http://your-agent/chat" />
-            </el-form-item>
-            <el-form-item label="Agent 版本">
-              <el-input v-model="form.agent_version" placeholder="v1.0（可选）" />
             </el-form-item>
             <el-form-item label="数据集" required>
               <div style="width:100%">
@@ -93,7 +88,7 @@ onMounted(async () => {
                 </el-select>
                 <div style="margin-top:6px">
                   <span style="font-size:12px;color:#94a3b8">没有数据集？</span>
-                  <el-button link type="primary" size="small" @click="router.push('/datasets/new')">上传新数据集</el-button>
+                  <span class="form-link" @click="router.push('/datasets/new')">上传新数据集</span>
                 </div>
               </div>
             </el-form-item>
@@ -140,4 +135,9 @@ onMounted(async () => {
 
 <style scoped>
 .card-title { font-weight: 600; font-size: 14px; color: #0f172a; }
+.form-link {
+  font-size: 12px; color: #6366f1; font-weight: 500; cursor: pointer;
+  transition: color .15s; margin-left: 2px;
+}
+.form-link:hover { color: #4f46e5; }
 </style>

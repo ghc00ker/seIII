@@ -113,12 +113,12 @@ body {
 .el-table th { background: #f8fafc !important; font-weight: 600 !important; color: #374151 !important; }
 .el-table tr:hover td { background: #f5f3ff !important; }
 
-/* ── Buttons ── */
-.el-button--primary:not(.el-button--link):not(.el-button--text) {
+/* ── Buttons — only solid (non-link, non-text) primary buttons ── */
+.el-button--primary:not(.is-link):not(.is-text) {
   background: #6366f1 !important;
   border-color: #6366f1 !important;
 }
-.el-button--primary:not(.el-button--link):not(.el-button--text):hover {
+.el-button--primary:not(.is-link):not(.is-text):hover {
   background: #4f46e5 !important;
   border-color: #4f46e5 !important;
 }
