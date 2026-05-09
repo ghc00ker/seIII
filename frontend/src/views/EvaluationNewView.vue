@@ -124,9 +124,11 @@ onMounted(async () => {
               />
             </el-form-item>
             <el-form-item label="最大步骤数">
-              <el-input-number
-                v-model="refMaxSteps" :min="1" :precision="0"
-                placeholder="不填则自动估算" style="width:160px"
+              <el-input
+                v-model.number="refMaxSteps"
+                type="number" min="1"
+                placeholder="不填则自动估算"
+                style="width:180px"
               />
             </el-form-item>
           </el-form>
@@ -157,7 +159,7 @@ onMounted(async () => {
               </div>
             </el-form-item>
             <el-form-item label="步骤惩罚系数">
-              <el-input-number v-model="penaltyFactor" :min="0.01" :max="1" :step="0.05" :precision="2" style="width:130px" />
+              <el-input v-model.number="penaltyFactor" type="number" min="0.01" max="1" step="0.05" style="width:130px" />
             </el-form-item>
           </el-form>
         </el-card>

@@ -120,7 +120,7 @@ onMounted(async () => {
               </div>
             </el-form-item>
             <el-form-item label="步骤惩罚系数">
-              <el-input-number v-model="penaltyFactor" :min="0.01" :max="1" :step="0.05" :precision="2" style="width:130px" />
+              <el-input v-model.number="penaltyFactor" type="number" min="0.01" max="1" step="0.05" style="width:130px" />
             </el-form-item>
           </el-form>
         </el-card>
