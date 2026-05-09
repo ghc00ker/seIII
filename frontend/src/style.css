@@ -114,11 +114,11 @@ body {
 .el-table tr:hover td { background: #f5f3ff !important; }
 
 /* ── Buttons ── */
-.el-button--primary {
+.el-button--primary:not(.el-button--link):not(.el-button--text) {
   background: #6366f1 !important;
   border-color: #6366f1 !important;
 }
-.el-button--primary:hover {
+.el-button--primary:not(.el-button--link):not(.el-button--text):hover {
   background: #4f46e5 !important;
   border-color: #4f46e5 !important;
 }

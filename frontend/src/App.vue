@@ -17,30 +17,19 @@ function activeStep() {
 
 <template>
   <div class="app-shell">
-
-    <!-- ── Top Bar ───────────────────────────────────────── -->
-    <header class="topbar">
-      <div class="tb-brand" @click="go('/dashboard')">
-        <div class="tb-logo">AE</div>
-        <span class="tb-name">Agent Eval</span>
-        <span class="tb-sep" />
-        <span class="tb-sub">智能体评估平台</span>
-      </div>
-      <div class="tb-actions">
-        <el-tooltip content="帮助文档" placement="bottom">
-          <div class="tb-icon"><el-icon size="16"><QuestionFilled /></el-icon></div>
-        </el-tooltip>
-        <el-tooltip content="设置" placement="bottom">
-          <div class="tb-icon"><el-icon size="16"><Setting /></el-icon></div>
-        </el-tooltip>
-        <div class="tb-avatar">评</div>
-      </div>
-    </header>
-
     <div class="app-body">
 
       <!-- ── Sidebar ─────────────────────────────────────── -->
       <nav class="sidebar">
+
+        <!-- Brand -->
+        <div class="sb-brand" @click="go('/dashboard')">
+          <div class="sb-logo">AE</div>
+          <div>
+            <div class="sb-name">Agent Eval</div>
+            <div class="sb-sub">智能体评估平台</div>
+          </div>
+        </div>
 
         <div class="nav-grp">
           <div class="nav-item" :class="{ active: isExact('/dashboard') }" @click="go('/dashboard')">
@@ -119,58 +108,14 @@ function activeStep() {
 </template>
 
 <style scoped>
-/* ── Shell ── */
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; background: #f2f3f5; }
-
-/* ── Top Bar ── */
-.topbar {
-  height: 54px;
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  background: #fff;
-  border-bottom: 1px solid #e4e7ec;
-  display: flex; align-items: center; justify-content: space-between;
-  padding-right: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
-.tb-brand {
-  width: 220px; display: flex; align-items: center; gap: 10px;
-  padding: 0 16px; cursor: pointer; flex-shrink: 0;
-  transition: opacity .15s;
-}
-.tb-brand:hover { opacity: .85; }
-.tb-logo {
-  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 800; color: #fff;
-  box-shadow: 0 3px 10px rgba(99,102,241,.35);
-}
-.tb-name { font-size: 14px; font-weight: 700; color: #1a1d23; }
-.tb-sep { width: 1px; height: 14px; background: #d1d5db; flex-shrink: 0; }
-.tb-sub { font-size: 12px; color: #9ca3af; }
-.tb-actions { display: flex; align-items: center; gap: 6px; }
-.tb-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  color: #6b7280; cursor: pointer; transition: all .15s;
-}
-.tb-icon:hover { background: #f3f4f6; color: #374151; }
-.tb-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff; cursor: pointer;
-  margin-left: 4px;
-}
-
-/* ── Body ── */
-.app-body { display: flex; padding-top: 54px; flex: 1; }
+.app-body  { display: flex; flex: 1; }
 
 /* ── Sidebar ── */
 .sidebar {
-  width: 220px; position: fixed;
-  top: 54px; left: 0;
-  height: calc(100vh - 54px);
+  width: 220px;
+  position: fixed; top: 0; left: 0;
+  height: 100vh;
   background: #0f172a;
   overflow-y: auto; overflow-x: hidden;
   z-index: 100;
@@ -180,6 +125,26 @@ function activeStep() {
 .sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
 
+/* Brand */
+.sb-brand {
+  padding: 16px 14px 14px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: opacity .15s;
+}
+.sb-brand:hover { opacity: .85; }
+.sb-logo {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #fff;
+  box-shadow: 0 3px 10px rgba(99,102,241,.35);
+}
+.sb-name { font-size: 13px; font-weight: 700; color: #e2e8f0; line-height: 1.3; }
+.sb-sub  { font-size: 10px; color: #475569; }
+
+/* Nav */
 .nav-grp { padding: 10px 10px 6px; }
 .nav-item {
   display: flex; align-items: center; gap: 9px;
@@ -203,10 +168,10 @@ function activeStep() {
   text-transform: uppercase; letter-spacing: 1.2px;
 }
 
-/* ── Workflow ── */
+/* Workflow steps */
 .wf-step { padding: 2px 10px; }
-.wf-hd { display: flex; align-items: center; gap: 8px; padding: 5px 4px; }
-.wf-dot {
+.wf-hd   { display: flex; align-items: center; gap: 8px; padding: 5px 4px; }
+.wf-dot  {
   width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; color: #fff;
@@ -226,7 +191,7 @@ function activeStep() {
   background: rgba(8,145,178,.15); padding: 1px 6px; border-radius: 8px;
 }
 .wf-items { padding-left: 4px; margin-left: 11px; border-left: 1.5px solid #1e293b; padding-bottom: 4px; }
-.wf-wire { width: 1.5px; height: 10px; background: #1e293b; margin-left: 21px; }
+.wf-wire  { width: 1.5px; height: 10px; background: #1e293b; margin-left: 21px; }
 
 .s-footer {
   margin-top: auto; padding: 14px 16px;
@@ -235,11 +200,11 @@ function activeStep() {
   font-size: 11px; color: #1e293b; flex-shrink: 0;
 }
 
-/* ── Main ── */
+/* Main */
 .main-wrap {
   margin-left: 220px; flex: 1;
-  padding: 24px 28px;
-  min-height: calc(100vh - 54px);
+  padding: 28px 32px;
+  min-height: 100vh;
   background: #f2f3f5;
 }
 </style>
