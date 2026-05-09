@@ -11,16 +11,16 @@ const total  = ref(0)
 const page   = ref(1)
 const page_size = ref(20)
 const loading = ref(false)
-const filterAgentId = ref('')
-const filterRunId   = ref('')
+const filterRunId = ref('')
 
 function scoreClass(s: number) {
-  if (s >= 0.8) return 'score-high'
-  if (s >= 0.6) return 'score-mid'
-  return 'score-low'
+  return s >= 0.8 ? 'score-high' : s >= 0.6 ? 'score-mid' : 'score-low'
 }
 function fmt(iso: string) {
   return new Date(iso).toLocaleString('zh-CN', { hour12: false })
+}
+function shortId(id: string) {
+  return '#' + id.replace(/^eval_/i, '').slice(0, 6)
 }
 
 async function load() {
@@ -29,7 +29,6 @@ async function load() {
     const res = await listEvaluations({
       page: page.value,
       page_size: page_size.value,
-      agent_id: filterAgentId.value || undefined,
       run_id: filterRunId.value || undefined,
     })
     data.value  = res.items
@@ -58,49 +57,79 @@ onMounted(load)
       </el-button>
     </div>
 
-    <!-- filters -->
-    <el-card shadow="never" style="margin-bottom:16px">
-      <el-row :gutter="12" align="middle">
-        <el-col :span="7">
-          <el-input v-model="filterAgentId" placeholder="按 Agent ID 过滤" clearable @change="load" />
-        </el-col>
-        <el-col :span="7">
-          <el-input v-model="filterRunId" placeholder="按 Run ID 过滤" clearable @change="load" />
-        </el-col>
-        <el-col :span="4">
-          <el-button @click="load">搜索</el-button>
-        </el-col>
-      </el-row>
-    </el-card>
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <el-input
+        v-model="filterRunId"
+        placeholder="按 Run ID 过滤"
+        clearable style="width:260px"
+        @change="load"
+      >
+        <template #prefix><el-icon><Search /></el-icon></template>
+      </el-input>
+      <el-button @click="load">刷新</el-button>
+      <span class="filter-total">共 {{ total }} 条记录</span>
+    </div>
 
-    <el-card shadow="never">
-      <el-table :data="data" v-loading="loading" style="width:100%">
-        <el-table-column prop="id" label="ID" width="160" show-overflow-tooltip />
-        <el-table-column prop="task" label="任务" show-overflow-tooltip />
-        <el-table-column label="综合分" width="100">
+    <!-- Table -->
+    <el-card shadow="never" class="table-card">
+      <el-table
+        :data="data"
+        v-loading="loading"
+        style="width:100%"
+        row-class-name="eval-row"
+        @row-click="(row: EvaluationListItem) => router.push(`/evaluations/${row.id}`)"
+      >
+        <!-- ID hash -->
+        <el-table-column label="ID" width="90">
           <template #default="{ row }">
-            <span :class="['score-text', scoreClass(row.overall_score)]">
+            <span class="id-chip">{{ shortId(row.id) }}</span>
+          </template>
+        </el-table-column>
+
+        <!-- Task / Input -->
+        <el-table-column label="任务输入" min-width="240" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span class="task-text">{{ row.task }}</span>
+          </template>
+        </el-table-column>
+
+        <!-- Metrics as compact score pills -->
+        <el-table-column label="评估指标" min-width="200">
+          <template #default="{ row }">
+            <div class="metric-badges">
+              <span
+                v-for="m in row.metrics_requested"
+                :key="m"
+                class="metric-badge"
+              >{{ m.replace(/_/g, ' ') }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <!-- Overall score -->
+        <el-table-column label="综合分" width="96" align="center">
+          <template #default="{ row }">
+            <span :class="['score-pill', scoreClass(row.overall_score)]">
               {{ (row.overall_score * 100).toFixed(1) }}%
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="指标" width="220">
+
+        <!-- Time -->
+        <el-table-column label="时间" width="148">
           <template #default="{ row }">
-            <el-tag
-              v-for="m in row.metrics_requested"
-              :key="m"
-              size="small"
-              style="margin:2px"
-            >{{ m }}</el-tag>
+            <span class="time-text">{{ fmt(row.created_at) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="时间" width="160">
-          <template #default="{ row }">{{ fmt(row.created_at) }}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right">
+
+        <!-- Actions -->
+        <el-table-column label="" width="80" align="center" @click.stop>
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="router.push(`/evaluations/${row.id}`)">详情</el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(row.id)">删除</el-button>
+            <el-button
+              link type="danger" size="small"
+              @click.stop="handleDelete(row.id)"
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -111,9 +140,49 @@ onMounted(load)
         :total="total"
         :page-sizes="[10, 20, 50]"
         layout="total, sizes, prev, pager, next"
-        style="margin-top:16px;justify-content:flex-end"
+        class="pagination"
         @change="load"
       />
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.filter-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.filter-total { margin-left: auto; font-size: 12.5px; color: #9ca3af; }
+
+.table-card :deep(.eval-row) { cursor: pointer; }
+.table-card :deep(.eval-row:hover td) { background: #f5f3ff !important; }
+
+.id-chip {
+  display: inline-block;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 11.5px; font-weight: 600;
+  background: #f3f4f6; color: #374151;
+  padding: 2px 8px; border-radius: 5px;
+}
+.task-text { font-size: 13px; color: #1f2937; }
+.time-text { font-size: 12px; color: #9ca3af; }
+
+.metric-badges { display: flex; flex-wrap: wrap; gap: 3px; }
+.metric-badge {
+  font-size: 10.5px; color: #6366f1; font-weight: 500;
+  background: #eef0ff; padding: 1px 6px; border-radius: 4px;
+}
+
+.score-pill {
+  display: inline-block; padding: 3px 10px;
+  border-radius: 99px; font-size: 12.5px; font-weight: 700;
+}
+.score-pill.score-high { background: #f0fdf4; color: #16a34a; }
+.score-pill.score-mid  { background: #fffbeb; color: #d97706; }
+.score-pill.score-low  { background: #fef2f2; color: #dc2626; }
+
+.pagination {
+  margin-top: 14px;
+  justify-content: flex-end;
+}
+</style>
