@@ -221,11 +221,12 @@ onMounted(async () => {
 
 /* ── Hero ── */
 .hero {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 55%, #7e22ce 100%);
   border-radius: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 8px 32px rgba(99,102,241,.25);
 }
 .hero::after {
   content: '';

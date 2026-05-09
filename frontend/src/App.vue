@@ -108,7 +108,7 @@ function activeStep() {
 </template>
 
 <style scoped>
-.app-shell { min-height: 100vh; display: flex; flex-direction: column; background: #f2f3f5; }
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; background: #f0f2f5; }
 .app-body  { display: flex; flex: 1; }
 
 /* ── Sidebar ── */
@@ -116,56 +116,62 @@ function activeStep() {
   width: 250px;
   position: fixed; top: 0; left: 0;
   height: 100vh;
-  background: #0f172a;
+  background: #ffffff;
   overflow-y: auto; overflow-x: hidden;
   z-index: 100;
   display: flex; flex-direction: column;
-  border-right: 1px solid rgba(255,255,255,0.04);
+  border-right: 1px solid #e8ecf0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
 }
 .sidebar::-webkit-scrollbar { width: 3px; }
-.sidebar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
+.sidebar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
 
 /* Brand */
 .sb-brand {
-  padding: 16px 14px 14px;
+  padding: 18px 16px 16px;
   display: flex; align-items: center; gap: 10px;
   cursor: pointer; flex-shrink: 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  transition: opacity .15s;
+  border-bottom: 1px solid #f0f2f5;
+  transition: background .15s;
 }
-.sb-brand:hover { opacity: .85; }
+.sb-brand:hover { background: #fafbfc; }
 .sb-logo {
-  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 800; color: #fff;
-  box-shadow: 0 3px 10px rgba(99,102,241,.35);
+  box-shadow: 0 4px 12px rgba(99,102,241,.3);
 }
-.sb-name { font-size: 13px; font-weight: 700; color: #e2e8f0; line-height: 1.3; }
-.sb-sub  { font-size: 10px; color: #475569; }
+.sb-name { font-size: 14px; font-weight: 700; color: #1a1d23; line-height: 1.3; }
+.sb-sub  { font-size: 10px; color: #b0b8c4; font-weight: 400; }
 
 /* Nav */
-.nav-grp { padding: 10px 10px 6px; }
+.nav-grp { padding: 10px 10px 4px; }
 .nav-item {
   display: flex; align-items: center; gap: 9px;
   padding: 9px 12px; border-radius: 8px;
-  cursor: pointer; color: #64748b;
-  font-size: 14px; transition: all .15s; user-select: none; position: relative;
+  cursor: pointer; color: #5a6478;
+  font-size: 13.5px; transition: all .15s; user-select: none;
 }
-.nav-item:hover { background: rgba(255,255,255,0.06); color: #cbd5e1; }
-.nav-item.active { background: rgba(99,102,241,.15); color: #818cf8; }
-.nav-item.active .el-icon { color: #818cf8; }
+.nav-item:hover { background: #f4f6fb; color: #1e293b; }
+.nav-item.active {
+  background: #eef0ff;
+  color: #5254f0;
+  font-weight: 600;
+}
+.nav-item.active .el-icon { color: #5254f0; }
+.nav-item .el-icon { font-size: 15px; flex-shrink: 0; }
 .nav-item.sub { padding: 8px 10px 8px 12px; font-size: 13px; margin-left: 2px; }
 .nav-pill {
   margin-left: auto; font-size: 10px; font-weight: 600;
-  background: rgba(99,102,241,.2); color: #818cf8;
-  padding: 1px 6px; border-radius: 10px;
+  background: #eef0ff; color: #6366f1;
+  padding: 2px 7px; border-radius: 10px;
 }
 
 .s-divider {
-  padding: 14px 18px 8px;
-  color: #1e293b; font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 14px 18px 6px;
+  color: #b0b8c4; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.4px;
 }
 
 /* Workflow steps */
@@ -180,24 +186,28 @@ function activeStep() {
 .d1 { background: #0891b2; }
 .d2 { background: #7c3aed; }
 .d3 { background: #059669; }
-.wf-step.on .wf-dot { box-shadow: 0 0 0 4px rgba(99,102,241,.2); }
+.wf-step.on .wf-dot { box-shadow: 0 0 0 4px rgba(99,102,241,.15); }
 .wf-lbl {
-  color: #334155; font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .7px; flex: 1;
+  color: #9ca3af; font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .8px; flex: 1;
 }
-.wf-step.on .wf-lbl { color: #94a3b8; }
+.wf-step.on .wf-lbl { color: #374151; }
 .wf-tag {
   font-size: 10px; color: #0891b2;
-  background: rgba(8,145,178,.15); padding: 1px 6px; border-radius: 8px;
+  background: #ecfeff; padding: 1px 7px; border-radius: 8px;
 }
-.wf-items { padding-left: 4px; margin-left: 11px; border-left: 1.5px solid #1e293b; padding-bottom: 4px; }
-.wf-wire  { width: 1.5px; height: 10px; background: #1e293b; margin-left: 21px; }
+.wf-items {
+  padding-left: 4px; margin-left: 11px;
+  border-left: 1.5px solid #e8ecf0;
+  padding-bottom: 4px;
+}
+.wf-wire { width: 1.5px; height: 10px; background: #e8ecf0; margin-left: 21px; }
 
 .s-footer {
   margin-top: auto; padding: 14px 18px;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  border-top: 1px solid #f0f2f5;
   display: flex; align-items: center; gap: 6px;
-  font-size: 12px; color: #334155; flex-shrink: 0;
+  font-size: 11.5px; color: #b0b8c4; flex-shrink: 0;
 }
 
 /* Main */
@@ -205,6 +215,6 @@ function activeStep() {
   margin-left: 250px; flex: 1;
   padding: 28px 32px;
   min-height: 100vh;
-  background: #f2f3f5;
+  background: #f0f2f5;
 }
 </style>

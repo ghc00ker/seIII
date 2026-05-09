@@ -171,8 +171,14 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.card-title { font-weight: 600; font-size: 14px; color: #0f172a; }
+.card-title { font-weight: 600; font-size: 14px; color: #111827; }
 .page-sub   { margin: 2px 0 0; font-size: 12px; color: #94a3b8; font-weight: 400; }
-.field-hint { margin-top: 4px; font-size: 11px; color: #94a3b8; }
-.trace-input :deep(textarea) { font-family: 'Menlo', 'Consolas', monospace; font-size: 12.5px; }
+.field-hint { margin-top: 4px; font-size: 11px; color: #9ca3af; }
+.trace-input :deep(textarea) {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', Consolas, 'Courier New', monospace;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #1e293b;
+  background: #fafbfc;
+}
 </style>
